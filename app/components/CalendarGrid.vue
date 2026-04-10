@@ -3,7 +3,7 @@ const props = defineProps({
 	viewDate: { type: Date, default: () => new Date() },
 	format: { type: String, default: "dk" }
 })
-const emit = defineEmits(['select-date'])
+const emit = defineEmits(["select-date"])
 const handleDateClick = (day) => {
 	const eventData = {
 		day,
@@ -11,7 +11,7 @@ const handleDateClick = (day) => {
 		year: props.viewDate.getFullYear(),
 		fullDate: new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
 	}
-	emit('select-date', eventData)
+	emit("select-date", eventData)
 }
 const isDk = computed(() => props.format === "dk")
 const daMonths = ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"]
