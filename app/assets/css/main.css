@@ -1,0 +1,20 @@
+/* app/assets/css/main.css */
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Inter", ui-sans-serif, system-ui;
+	/*text*/
+	--tracking-minimum: -0.375rem;
+	/*colors*/
+	--color-palladian: #e9edf3;
+	--color-abyssal: #0e1218;
+	--color-ember: #ff6b35;
+	--color-warm-glow: #ffb849;
+	--color-slate: #151b24;
+	--color-slate2: #1c2431;
+	--color-muted: #b7c0cd;
+	--color-muted2: #8a96a6;
+}
+@utility tracking-min {
+	letter-spacing: var(--tracking-minimum);
+}
