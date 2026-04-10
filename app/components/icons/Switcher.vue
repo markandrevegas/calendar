@@ -1,8 +1,6 @@
 <template>
-	<div class="hover:bg-accent flex cursor-pointer items-center justify-center rounded-md p-2 transition-colors duration-200 select-none" @mouseenter="mouseEnterHandler" @mouseleave="mouseLeaveHandler" role="button" tabindex="0">
+	<div class="hover:bg-accent flex cursor-pointer items-center justify-center rounded-md transition-colors duration-200 select-none" @mouseenter="mouseEnterHandler" @mouseleave="mouseLeaveHandler" role="button" tabindex="0">
 		<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-			<path d="m3 8 4-4 4 4" />
-			<path d="M7 4v16" />
 			<Motion is="g" :ref="targetList[0]">
 				<path d="M20 8h-5" />
 				<path d="M15 10V6.5a2.5 2.5 0 0 1 5 0V10" />

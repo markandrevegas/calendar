@@ -30,10 +30,8 @@ const daysInMonth = computed(() => {
 const startOffset = computed(() => {
 	const firstDay = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), 1).getDay()
 	if (props.format === "dk") {
-		// JS: 0=Sun, 1=Mon. We want Mon=0.
 		return firstDay === 0 ? 6 : firstDay - 1
 	}
-	// US: Sun=0.
 	return firstDay
 })
 
@@ -44,12 +42,6 @@ const labels = computed(() => {
 	} else {
 		return ["S", "M", "T", "W", "T", "F", "S"]
 	}
-})
-
-// 3. Current Day check (to highlight today only if viewing current month/year)
-const today = new Date()
-const isCurrentMonth = computed(() => {
-	return props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
 })
 
 const getDayState = (day) => {

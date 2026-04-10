@@ -8,7 +8,12 @@ export default defineNuxtConfig({
 	},
 	compatibilityDate: "2026-04-10",
 	srcDir: "app/",
-
+	components: [
+		{
+			path: "~/components",
+			pathPrefix: false
+		}
+	],
 	vite: {
 		optimizeDeps: {
 			include: ["@vue/devtools-core", "@vue/devtools-kit"]
