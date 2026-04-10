@@ -1,6 +1,6 @@
 <template>
 	<div class="flex min-h-screen items-center justify-center bg-[#D4D4D2] p-4 sm:p-8">
-		<main class="relative flex h-[667px] w-full max-w-[440px] min-w-[375px] flex-col overflow-hidden bg-[#E5E5E3] shadow-2xl transition-all duration-300 sm:rounded-[3rem] sm:border-[8px] sm:border-slate-900" style="height: clamp(667px, 90vh, 932px)">
+		<main class="relative z-0 flex h-[667px] w-full min-w-[375px] max-w-[440px] flex-col overflow-hidden bg-[#E5E5E3] shadow-2xl transition-all duration-300 sm:rounded-[3rem] sm:border-[8px] sm:border-slate-900" style="height: clamp(667px, 90vh, 932px);">
 			<div class="hidden h-8 w-full items-center justify-center sm:flex">
 				<div class="h-6 w-32 rounded-b-2xl bg-slate-900"></div>
 			</div>

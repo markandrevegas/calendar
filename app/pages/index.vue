@@ -5,6 +5,13 @@ const currentFormat = useCookie('calendar-format', {
 	maxAge: 60 * 60 * 24 * 36
 })
 
+const isModalOpen = ref(false)
+const selectedDateData = ref({})
+const openModal = (data) => {
+	selectedDateData.value = data
+	isModalOpen.value = true
+}
+
 const toggleFormat = () => {
 	currentFormat.value = currentFormat.value === 'dk' ? 'us' : 'dk'
 }
@@ -18,8 +25,8 @@ const toggleFormat = () => {
 		</div>
 
 		<ClientOnly>
-			<CalendarGrid :format="currentFormat" :viewDate="new Date()" />
-			
+			<CalendarGrid :format="currentFormat" :viewDate="new Date()" @select-date="openModal" />
+			<EventModal :is-open="isModalOpen" :event-data="selectedDateData" @close="isModalOpen = false" />
 			<template #fallback>
 				<div class="h-[300px] w-full animate-pulse rounded-3xl bg-palladian/50"></div>
 			</template>

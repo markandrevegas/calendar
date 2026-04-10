@@ -3,7 +3,16 @@ const props = defineProps({
 	viewDate: { type: Date, default: () => new Date() },
 	format: { type: String, default: "dk" }
 })
-
+const emit = defineEmits(['select-date'])
+const handleDateClick = (day) => {
+	const eventData = {
+		day,
+		month: props.viewDate.getMonth() + 1,
+		year: props.viewDate.getFullYear(),
+		fullDate: new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
+	}
+	emit('select-date', eventData)
+}
 const isDk = computed(() => props.format === "dk")
 const daMonths = ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"]
 
@@ -81,14 +90,7 @@ const getDayState = (day) => {
 			</div>
 
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
-				<div
-					class="h-full w-full rounded-full transition-all duration-300"
-					:class="{
-						'bg-abyssal': getDayState(day) === 'past',
-						'bg-ember': getDayState(day) === 'today',
-						'bg-abyssal/50': getDayState(day) === 'future'
-					}"
-				></div>
+				<button @click="handleDateClick(day)" class="h-full w-full rounded-full transition-all duration-300" :class="{ 'bg-abyssal': getDayState(day) === 'past', 'bg-ember': getDayState(day) === 'today', 'bg-abyssal/50': getDayState(day) === 'future' }"></button>
 			</div>
 		</div>
 	</div>
