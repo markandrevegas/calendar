@@ -1,10 +1,25 @@
 <script setup>
 const props = defineProps({
 	viewDate: { type: Date, default: () => new Date() },
-	format: { type: String, default: "dk" }
+	format: { type: String, default: "dk" },
+	events: { type: Object, default: () => ({}) }
 })
 const emit = defineEmits(["select-date"])
+const getInitialSelectedDay = () => {
+	const today = new Date()
+	const isCurrentMonthView = props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
+	return isCurrentMonthView ? today.getDate() : null
+}
+
+const selectedDay = ref(getInitialSelectedDay())
+const formatDateKey = (day) => `${day}.${props.viewDate.getMonth() + 1}.${props.viewDate.getFullYear()}`
 const handleDateClick = (day) => {
+	if (selectedDay.value !== day) {
+		selectedDay.value = day
+		return
+	}
+
+	selectedDay.value = day
 	const eventData = {
 		day,
 		month: props.viewDate.getMonth() + 1,
@@ -21,13 +36,20 @@ const currentMonthName = computed(() => {
 	return props.format === "dk" ? daMonths[monthIndex] : props.viewDate.toLocaleString("en-US", { month: "long" })
 })
 
+const isCurrentMonth = computed(() => {
+	const today = new Date()
+	return props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
+})
+
+const displayDay = computed(() => selectedDay.value ?? props.viewDate.getDate())
+const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), displayDay.value))
+
 const currentWeekdayName = computed(() => {
 	if (props.format === "dk") {
-		// Custom mapping or native:
 		const days = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"]
-		return days[props.viewDate.getDay()]
+		return days[displayDate.value.getDay()]
 	}
-	return props.viewDate.toLocaleString("en-US", { weekday: "short" })
+	return displayDate.value.toLocaleString("en-US", { weekday: "short" })
 })
 
 // 1. Calculate how many days in the current month
@@ -55,19 +77,34 @@ const labels = computed(() => {
 
 const getDayState = (day) => {
 	const today = new Date()
-	const isThisMonth = props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
-	if (!isThisMonth) return "future"
-	if (day < today.getDate()) return "past"
-	if (day === today.getDate()) return "today"
+	const currentDate = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
+	const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+	if (currentDate < todayDate) return "past"
+	if (currentDate.getTime() === todayDate.getTime()) return "today"
 	return "future"
 }
+
+const hasEvent = (day) => {
+	const dateKey = formatDateKey(day)
+	return Array.isArray(props.events?.[dateKey]) && props.events[dateKey].length > 0
+}
+
+watch(
+	() => [props.viewDate.getMonth(), props.viewDate.getFullYear()],
+	() => {
+		selectedDay.value = getInitialSelectedDay()
+	}
+)
 </script>
 
 <template>
-	<div class="w-full select-none">
-		<div class="mb-10 px-2">
+	<div class="flex h-full min-h-0 w-full flex-col select-none">
+		<div class="mb-6 px-2">
 			<div class="flex flex-col items-baseline">
-				<h1 class="tracking-min text-abyssal text-7xl font-bold">{{ viewDate.getDate() }}</h1>
+				<h1 class="tracking-min text-abyssal text-7xl font-bold" :class="{ invisible: !isCurrentMonth }">
+					{{ displayDay }}
+				</h1>
 				<div class="mb-2 flex w-full justify-between">
 					<span class="text-abyssal text-5xl font-semibold tracking-tight">
 						{{ currentMonthName }}
@@ -80,7 +117,7 @@ const getDayState = (day) => {
 			</div>
 		</div>
 
-		<div class="mb-4 grid grid-cols-7">
+		<div class="mb-3 grid grid-cols-7">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
 		</div>
 
@@ -90,7 +127,17 @@ const getDayState = (day) => {
 			</div>
 
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
-				<button @click="handleDateClick(day)" class="h-full w-full rounded-full transition-all duration-300" :class="{ 'bg-abyssal': getDayState(day) === 'past', 'bg-ember': getDayState(day) === 'today', 'bg-abyssal/50': getDayState(day) === 'future' }"></button>
+				<button
+					@click="handleDateClick(day)"
+					class="relative flex h-full w-full items-center justify-center rounded-full transition-all duration-300"
+					:class="{
+						'bg-ember': selectedDay === day,
+						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
+						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past'
+					}"
+				>
+					<span v-if="hasEvent(day)" class="text-base leading-none text-white">*</span>
+				</button>
 			</div>
 		</div>
 	</div>
