@@ -7,6 +7,9 @@ export default defineNuxtConfig({
 		compatibilityVersion: 4
 	},
 	compatibilityDate: "2026-04-10",
+	app: {
+		baseURL: process.env.NUXT_APP_BASE_URL || "/"
+	},
 	srcDir: "app/",
 	components: [
 		{
