@@ -67,7 +67,7 @@ const submitEvent = () => {
 		</Transition>
 
 		<Transition appear name="slide">
-			<div v-show="isOpen" class="bg-palladian relative z-10 w-full rounded-t-[2.5rem] px-8 pt-4 pb-10 shadow-2xl flex flex-col justify-between" style="height: 60vh">
+			<div v-show="isOpen" class="bg-palladian relative z-10 flex w-full flex-col justify-between rounded-t-[2.5rem] px-8 pt-4 pb-10 shadow-2xl" style="height: 60vh">
 				<div class="mb-6 flex justify-center"><div class="bg-abyssal/10 h-1.5 w-12 rounded-full"></div></div>
 
 				<div class="mb-8">
@@ -81,7 +81,7 @@ const submitEvent = () => {
 
 				<div v-if="hasEvents && !isCreating" class="flex flex-col gap-4">
 					<div class="max-h-[28vh] space-y-3 overflow-y-auto pr-1">
-						<article v-for="(event, index) in existingEvents" :key="`${event.title}-${index}`" class="bg-white/70 rounded-2xl px-5 py-4">
+						<article v-for="(event, index) in existingEvents" :key="`${event.title}-${index}`" class="rounded-2xl bg-white/70 px-5 py-4">
 							<h3 class="text-abyssal text-sm font-semibold tracking-tight">
 								{{ event.title }}
 							</h3>
@@ -97,12 +97,12 @@ const submitEvent = () => {
 				</div>
 
 				<div v-else-if="!isCreating" class="flex flex-col">
-					<div class="hidden bg-abyssal/5 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+					<div class="bg-abyssal/5 mb-4 flex hidden h-16 w-16 items-center justify-center rounded-full">
 						<svg xmlns="http://www.w3.org/2000/svg" class="text-abyssal/20 h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
 						</svg>
 					</div>
-					
+
 					<button @click="isCreating = true" class="bg-abyssal text-palladian w-full rounded-2xl py-5 text-[10px] font-bold tracking-[0.15em] uppercase transition-transform active:scale-95">Create Event</button>
 				</div>
 

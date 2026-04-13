@@ -4,7 +4,7 @@
 @theme {
 	--font-sans: "Inter", ui-sans-serif, system-ui;
 	/*text*/
-	--tracking-minimum: -0.375rem;
+	--tracking-minimum: -0.25rem;
 	/*colors*/
 	--color-palladian: #e9edf3;
 	--color-abyssal: #0e1218;
@@ -17,4 +17,8 @@
 }
 @utility tracking-min {
 	letter-spacing: var(--tracking-minimum);
+}
+body {
+	@apply bg-slate-50;
+	/*@apply bg-[#E5E5E3] antialiased;*/
 }

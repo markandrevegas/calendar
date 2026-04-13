@@ -149,14 +149,7 @@ const toggleFormat = () => {
 		</div>
 
 		<ClientOnly>
-			<div
-				class="relative min-h-0 flex-1 overflow-hidden touch-pan-y select-none"
-				@touchstart.passive="handleTouchStart"
-				@touchend.passive="handleTouchEnd"
-				@pointerdown="handlePointerDown"
-				@pointerup="handlePointerUp"
-				@pointercancel="handlePointerCancel"
-			>
+			<div class="relative min-h-0 flex-1 touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
 				<Transition :name="transitionName" mode="out-in">
 					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="openModal" />
 				</Transition>
@@ -174,7 +167,9 @@ const toggleFormat = () => {
 .month-next-leave-active,
 .month-prev-enter-active,
 .month-prev-leave-active {
-	transition: transform 0.28s ease, opacity 0.28s ease;
+	transition:
+		transform 0.28s ease,
+		opacity 0.28s ease;
 }
 
 .month-next-enter-from,

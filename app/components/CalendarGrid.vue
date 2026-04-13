@@ -7,8 +7,8 @@ const props = defineProps({
 const emit = defineEmits(["select-date"])
 const getInitialSelectedDay = () => {
 	const today = new Date()
-	const isCurrentMonthView = props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
-	return isCurrentMonthView ? today.getDate() : null
+	const lastDayOfMonth = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth() + 1, 0).getDate()
+	return Math.min(today.getDate(), lastDayOfMonth)
 }
 
 const selectedDay = ref(getInitialSelectedDay())
@@ -36,17 +36,13 @@ const currentMonthName = computed(() => {
 	return props.format === "dk" ? daMonths[monthIndex] : props.viewDate.toLocaleString("en-US", { month: "long" })
 })
 
-const isCurrentMonth = computed(() => {
-	const today = new Date()
-	return props.viewDate.getMonth() === today.getMonth() && props.viewDate.getFullYear() === today.getFullYear()
-})
-
 const displayDay = computed(() => selectedDay.value ?? props.viewDate.getDate())
+const displayDayLabel = computed(() => String(displayDay.value).padStart(2, "0"))
 const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), displayDay.value))
 
 const currentWeekdayName = computed(() => {
 	if (props.format === "dk") {
-		const days = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"]
+		const days = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"]
 		return days[displayDate.value.getDay()]
 	}
 	return displayDate.value.toLocaleString("en-US", { weekday: "short" })
@@ -100,24 +96,22 @@ watch(
 
 <template>
 	<div class="flex h-full min-h-0 w-full flex-col select-none">
-		<div class="mb-6 px-2">
-			<div class="flex flex-col items-baseline">
-				<h1 class="tracking-min text-abyssal text-7xl font-bold" :class="{ invisible: !isCurrentMonth }">
-					{{ displayDay }}
-				</h1>
-				<div class="mb-2 flex w-full justify-between">
-					<span class="text-abyssal text-5xl font-semibold tracking-tight">
+		<div class="flex flex-1 items-start px-1">
+			<div class="flex min-h-0 flex-1 items-start px-2 py-2">
+				<div class="flex w-full flex-col">
+					<span class="text-abyssal/80 text-xl leading-none font-semibold">
 						{{ currentMonthName }}
 					</span>
-					<div class="text-muted2 ml-auto self-end text-xl font-medium uppercase">
-						{{ currentWeekdayName }}
-					</div>
+					<span class="block text-abyssal text-3xl tracking-tight font-semibold">{{ currentWeekdayName }}</span>
+					<h1 class="text-abyssal w-full overflow-hidden text-8xl tracking-min leading-none font-medium whitespace-nowrap tabular-nums">
+						{{ displayDayLabel }}
+					</h1>
+					<span class="hidden text-abyssal text-[clamp(6rem,7vw,8rem)] leading-none">{{ viewDate.getFullYear() }}</span>
 				</div>
-				<span class="text-abyssal text-lg">{{ viewDate.getFullYear() }}</span>
 			</div>
 		</div>
 
-		<div class="mb-3 grid grid-cols-7">
+		<div class="mt-auto mb-3 grid grid-cols-7">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
 		</div>
 
@@ -129,7 +123,7 @@ watch(
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
 				<button
 					@click="handleDateClick(day)"
-					class="relative flex h-full w-full items-center justify-center rounded-full transition-all duration-300"
+					class="relative flex h-full w-full items-center justify-center rounded-full transition-all duration-300 text-white tabular-nums"
 					:class="{
 						'bg-ember': selectedDay === day,
 						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
@@ -137,6 +131,7 @@ watch(
 					}"
 				>
 					<span v-if="hasEvent(day)" class="text-base leading-none text-white">*</span>
+					<span v-else class="font-semibold">{{ day }}</span>
 				</button>
 			</div>
 		</div>

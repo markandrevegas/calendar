@@ -18,11 +18,23 @@ export default defineNuxtConfig({
 		}
 	],
 	vite: {
-		optimizeDeps: {
-			include: ["@vue/devtools-core", "@vue/devtools-kit"]
-		},
-		plugins: [tailwindcss()]
-	},
-
+		build: {
+      sourcemap: false, 
+    },
+		css: {
+      devSourcemap: false
+    },
+    plugins: [
+      tailwindcss()
+    ],
+    optimizeDeps: {
+      include: ["@vue/devtools-core", "@vue/devtools-kit"]
+    }
+  },
+	postcss: {
+    plugins: {
+      autoprefixer: {},
+    },
+  },
 	devtools: { enabled: true }
 })
