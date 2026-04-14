@@ -29,7 +29,7 @@ const handleDateClick = (day) => {
 	emit("select-date", eventData)
 }
 const isDk = computed(() => props.format === "dk")
-const daMonths = ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"]
+const daMonths = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"]
 
 const currentMonthName = computed(() => {
 	const monthIndex = props.viewDate.getMonth()
@@ -42,7 +42,7 @@ const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.
 
 const currentWeekdayName = computed(() => {
 	if (props.format === "dk") {
-		const days = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"]
+		const days = ["søn", "man", "tir", "ons", "tor", "fre", "lør"]
 		return days[displayDate.value.getDay()]
 	}
 	return displayDate.value.toLocaleString("en-US", { weekday: "short" })
@@ -96,20 +96,7 @@ watch(
 
 <template>
 	<div class="flex h-full min-h-0 w-full flex-col select-none">
-		<div class="flex flex-1 items-start px-1">
-			<div class="flex min-h-0 flex-1 items-start px-2 py-2">
-				<div class="flex w-full flex-col">
-					<span class="text-abyssal/80 text-xl leading-none font-semibold">
-						{{ currentMonthName }}
-					</span>
-					<span class="block text-abyssal text-3xl tracking-tight font-semibold">{{ currentWeekdayName }}</span>
-					<h1 class="text-abyssal w-full overflow-hidden text-8xl tracking-min leading-none font-medium whitespace-nowrap tabular-nums">
-						{{ displayDayLabel }}
-					</h1>
-					<span class="hidden text-abyssal text-[clamp(6rem,7vw,8rem)] leading-none">{{ viewDate.getFullYear() }}</span>
-				</div>
-			</div>
-		</div>
+		<CalendarHeader :view-date="props.viewDate" :selected-day="selectedDay" :format="props.format" />
 
 		<div class="mt-auto mb-3 grid grid-cols-7">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
@@ -123,7 +110,7 @@ watch(
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
 				<button
 					@click="handleDateClick(day)"
-					class="relative flex h-full w-full items-center justify-center rounded-full transition-all duration-300 text-white tabular-nums"
+					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300"
 					:class="{
 						'bg-ember': selectedDay === day,
 						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
@@ -131,7 +118,7 @@ watch(
 					}"
 				>
 					<span v-if="hasEvent(day)" class="text-base leading-none text-white">*</span>
-					<span v-else class="font-semibold">{{ day }}</span>
+					<span v-else class="hidden font-semibold">{{ day }}</span>
 				</button>
 			</div>
 		</div>

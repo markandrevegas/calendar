@@ -4,7 +4,7 @@
 @theme {
 	--font-sans: "Inter", ui-sans-serif, system-ui;
 	/*text*/
-	--tracking-minimum: -0.25rem;
+	--tracking-minimum: -0.5rem;
 	/*colors*/
 	--color-palladian: #e9edf3;
 	--color-abyssal: #0e1218;
