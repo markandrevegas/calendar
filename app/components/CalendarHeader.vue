@@ -7,13 +7,18 @@ const props = defineProps({
 	format: { type: String, default: "dk" }
 })
 
-const daMonths = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"]
-
 const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), props.selectedDay))
 
 const currentMonthName = computed(() => {
 	const monthIndex = props.viewDate.getMonth()
-	return props.format === "dk" ? daMonths[monthIndex] : props.viewDate.toLocaleString("en-US", { month: "long" })
+	
+	if (props.format === "dk") {
+		const daMonths = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"]
+		return daMonths[monthIndex]
+	} else {
+		const enMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+		return enMonths[monthIndex]
+	}
 })
 
 const currentWeekdayName = computed(() => {
