@@ -28,25 +28,6 @@ const handleDateClick = (day) => {
 	}
 	emit("select-date", eventData)
 }
-const isDk = computed(() => props.format === "dk")
-const daMonths = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"]
-
-const currentMonthName = computed(() => {
-	const monthIndex = props.viewDate.getMonth()
-	return props.format === "dk" ? daMonths[monthIndex] : props.viewDate.toLocaleString("en-US", { month: "long" })
-})
-
-const displayDay = computed(() => selectedDay.value ?? props.viewDate.getDate())
-const displayDayLabel = computed(() => String(displayDay.value).padStart(2, "0"))
-const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), displayDay.value))
-
-const currentWeekdayName = computed(() => {
-	if (props.format === "dk") {
-		const days = ["søn", "man", "tir", "ons", "tor", "fre", "lør"]
-		return days[displayDate.value.getDay()]
-	}
-	return displayDate.value.toLocaleString("en-US", { weekday: "short" })
-})
 
 // 1. Calculate how many days in the current month
 const daysInMonth = computed(() => {

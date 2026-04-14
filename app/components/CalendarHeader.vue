@@ -28,26 +28,22 @@ const displayDayLabel = computed(() => String(props.selectedDay).padStart(2, "0"
 </script>
 
 <template>
-	<div class="flex flex-1 items-start px-1">
-		<div class="flex min-h-0 flex-1 items-start px-2">
-			<div class="flex w-fit flex-col">
-				<div class="border-abyssal/10 flex items-center gap-1 border-b pb-1 whitespace-nowrap">
-					<span class="text-abyssal text-xl font-bold">
-						{{ currentWeekdayName }}
-					</span>
-					<span class="text-abyssal/50 text-xl font-bold">
-						{{ currentMonthName }}
-					</span>
-				</div>
-
-				<h1 class="text-abyssal w-full text-8xl leading-none font-semibold tracking-min tabular-nums">
-					{{ displayDayLabel }}
-				</h1>
-
-				<span class="hidden">
-					{{ viewDate.getFullYear() }}
+	<div class="flex flex-col w-24 flex-1 justify-center">
+		<div class="flex w-fit flex-col">
+			<div class="flex w-full items-center justify-start gap-2 whitespace-nowrap">
+				<span class="text-abyssal text-xl font-semibold tabular-nums">
+					{{ currentWeekdayName }}
+				</span>
+				<span class="text-abyssal/50 text-xl font-semibold">
+					{{ currentMonthName }}
 				</span>
 			</div>
+
+			<h1 class="text-abyssal tracking-min flex w-full justify-between text-6xl leading-none font-semibold tabular-nums">
+				{{ displayDayLabel }}
+			</h1>
+
+			<span class="hidden">{{ viewDate.getFullYear() }}</span>
 		</div>
 	</div>
 </template>
