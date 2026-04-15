@@ -30,25 +30,31 @@ const currentWeekdayName = computed(() => {
 })
 
 const displayDayLabel = computed(() => String(props.selectedDay).padStart(2, "0"))
+const currentFormat = useCookie("calendar-format", {
+	default: () => "dk",
+	watch: true,
+	maxAge: 60 * 60 * 24 * 36
+})
 </script>
 
 <template>
-	<div class="flex flex-1 flex-col justify-center">
-		<div class="flex flex-col">
+	<div class="flex flex-1 flex-col">
+		<div class="w-full flex justify-between">
+			<span>{{ viewDate.getFullYear() }}</span>
+			<LanguageSwitcher v-model="currentFormat" />
+		</div>
+		<div class="flex-1 flex flex-col justify-end pb-24">
 			<div class="flex w-32 font-semibold whitespace-nowrap">
-				<span class="text-3xl text-abyssal inline-block min-w-[3.5ch]">
+				<span class="text-2xl text-abyssal inline-block w-[3.5ch]">
 					{{ currentWeekdayName }}
 				</span>
-				<span class="text-3xl text-abyssal/60 inline-block min-w-[3.5ch]">
+				<span class="text-2xl text-abyssal/60 inline-block w-[3.5ch]">
 					{{ currentMonthName }}
 				</span>
 			</div>
-
 			<h1 class="text-abyssal tracking-min text-[6rem] w-[3.5ch] leading-none tabular-nums">
 				{{ displayDayLabel }}
 			</h1>
-
-			<span class="hidden">{{ viewDate.getFullYear() }}</span>
 		</div>
 	</div>
 </template>

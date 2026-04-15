@@ -9,11 +9,6 @@ const isPointerActive = ref(false)
 const swipeDirection = ref("next")
 const isDesktop = ref(false)
 const DESKTOP_BREAKPOINT = 1024
-const currentFormat = useCookie("calendar-format", {
-	default: () => "dk",
-	watch: true,
-	maxAge: 60 * 60 * 24 * 36
-})
 
 const monthViewKey = computed(() => `${currentViewDate.value.getFullYear()}-${currentViewDate.value.getMonth()}`)
 
@@ -138,7 +133,6 @@ const openModal = (data) => {
 </script>
 <template>
 	<div class="flex h-full min-h-0 flex-col gap-6">
-		<LanguageSwitcher v-model="currentFormat" />
 		<ClientOnly>
 			<div class="relative min-h-0 flex-1 touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
 				<Transition :name="transitionName" mode="out-in">
