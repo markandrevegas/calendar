@@ -11,7 +11,7 @@ const displayDate = computed(() => new Date(props.viewDate.getFullYear(), props.
 
 const currentMonthName = computed(() => {
 	const monthIndex = props.viewDate.getMonth()
-	
+
 	if (props.format === "dk") {
 		const daMonths = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"]
 		return daMonths[monthIndex]
@@ -33,18 +33,18 @@ const displayDayLabel = computed(() => String(props.selectedDay).padStart(2, "0"
 </script>
 
 <template>
-	<div class="flex flex-col flex-1 justify-center">
-		<div class="flex w-fit flex-col">
-			<div class="flex justify-between whitespace-nowrap text-4xl font-semibold ">
-				<span class="text-abyssal">
+	<div class="flex flex-1 flex-col justify-center">
+		<div class="flex flex-col">
+			<div class="flex w-32 font-semibold whitespace-nowrap">
+				<span class="text-3xl text-abyssal inline-block min-w-[3.5ch]">
 					{{ currentWeekdayName }}
 				</span>
-				<span class="text-abyssal/60">
+				<span class="text-3xl text-abyssal/60 inline-block min-w-[3.5ch]">
 					{{ currentMonthName }}
 				</span>
 			</div>
 
-			<h1 class="text-abyssal font-mono tracking-min text-[7.75rem] leading-none tabular-nums">
+			<h1 class="text-abyssal tracking-min text-[6rem] w-[3.5ch] leading-none tabular-nums">
 				{{ displayDayLabel }}
 			</h1>
 

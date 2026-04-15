@@ -52,6 +52,12 @@ const labels = computed(() => {
 	}
 })
 
+// This ensures the grid always has 6 rows (6 * 7 = 42)
+const endOffset = computed(() => {
+	const currentCount = startOffset.value + daysInMonth.value
+	return 42 - currentCount
+})
+
 const getDayState = (day) => {
 	const today = new Date()
 	const currentDate = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
@@ -84,8 +90,8 @@ watch(
 		</div>
 
 		<div class="grid grid-cols-7 gap-1">
-			<div v-for="n in startOffset" :key="'empty-' + n" class="flex aspect-square items-center justify-center">
-				<div class="bg-palladian h-2 w-2 rounded-full"></div>
+			<div v-for="n in startOffset" :key="'start-' + n" class="flex aspect-square items-center justify-center">
+				<div class="bg-palladian h-2 w-2 rounded-full opacity-30"></div>
 			</div>
 
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
@@ -98,9 +104,14 @@ watch(
 						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past'
 					}"
 				>
-					<span v-if="hasEvent(day)" class="text-base leading-none text-white">*</span>
-					<span v-else class="hidden font-semibold">{{ day }}</span>
+					<span v-if="hasEvent(day)" class="absolute top-1 text-[10px] leading-none text-white">•</span>
+
+					<span class="hidden font-semibold">{{ day }}</span>
 				</button>
+			</div>
+
+			<div v-for="n in endOffset" :key="'end-' + n" class="flex aspect-square items-center justify-center">
+				<div class="bg-palladian h-2 w-2 rounded-full opacity-30"></div>
 			</div>
 		</div>
 	</div>

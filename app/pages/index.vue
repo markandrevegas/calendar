@@ -135,19 +135,10 @@ const openModal = (data) => {
 	selectedDateData.value = data
 	isModalOpen.value = true
 }
-
-const toggleFormat = () => {
-	currentFormat.value = currentFormat.value === "dk" ? "us" : "dk"
-}
 </script>
 <template>
 	<div class="flex h-full min-h-0 flex-col gap-6">
-		<div class="flex justify-end px-2">
-			<button @click="toggleFormat" class="bg-abyssal/20 text-abyssal flex items-center rounded-full px-3 py-1 text-[11px] font-bold tracking-widest uppercase">
-				<span>{{ currentFormat === "dk" ? "DANISH" : "ENGLISH" }}</span>
-			</button>
-		</div>
-
+		<LanguageSwitcher v-model="currentFormat" />
 		<ClientOnly>
 			<div class="relative min-h-0 flex-1 touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
 				<Transition :name="transitionName" mode="out-in">
