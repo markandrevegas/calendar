@@ -5,7 +5,7 @@
 				<div class="h-6 w-32 rounded-b-2xl bg-slate-900"></div>
 			</div>
 
-			<div class="min-w-0 flex-1 overflow-hidden px-6 py-8">
+			<div class="min-w-0 flex-1 overflow-hidden px-6">
 				<slot></slot>
 			</div>
 
