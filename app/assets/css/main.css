@@ -19,6 +19,6 @@
 	letter-spacing: var(--tracking-minimum);
 }
 body {
-	@apply bg-slate-50;
+	@apply bg-white;
 	/*@apply bg-[#E5E5E3] antialiased;*/
 }

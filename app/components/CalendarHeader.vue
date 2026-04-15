@@ -33,18 +33,18 @@ const displayDayLabel = computed(() => String(props.selectedDay).padStart(2, "0"
 </script>
 
 <template>
-	<div class="flex flex-col w-24 flex-1 justify-center">
+	<div class="flex flex-col flex-1 justify-center">
 		<div class="flex w-fit flex-col">
-			<div class="flex w-full items-center justify-start gap-2 whitespace-nowrap">
-				<span class="text-abyssal text-xl font-semibold tabular-nums">
+			<div class="flex justify-between whitespace-nowrap text-4xl font-semibold ">
+				<span class="text-abyssal">
 					{{ currentWeekdayName }}
 				</span>
-				<span class="text-abyssal/50 text-xl font-semibold">
+				<span class="text-abyssal/60">
 					{{ currentMonthName }}
 				</span>
 			</div>
 
-			<h1 class="text-abyssal tracking-min flex w-full justify-between text-6xl leading-none font-semibold tabular-nums">
+			<h1 class="text-abyssal font-mono tracking-min text-[7.75rem] leading-none tabular-nums">
 				{{ displayDayLabel }}
 			</h1>
 
