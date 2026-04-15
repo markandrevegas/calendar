@@ -39,20 +39,20 @@ const currentFormat = useCookie("calendar-format", {
 
 <template>
 	<div class="flex flex-1 flex-col">
-		<div class="w-full flex justify-between">
+		<div class="flex w-full justify-between">
 			<span>{{ viewDate.getFullYear() }}</span>
 			<LanguageSwitcher v-model="currentFormat" />
 		</div>
-		<div class="flex-1 flex flex-col justify-end pb-24">
+		<div class="flex flex-1 flex-col justify-end pb-24">
 			<div class="flex w-32 font-semibold whitespace-nowrap">
-				<span class="text-2xl text-abyssal inline-block w-[3.5ch]">
+				<span class="text-abyssal inline-block w-[3.5ch] text-2xl">
 					{{ currentWeekdayName }}
 				</span>
-				<span class="text-2xl text-abyssal/60 inline-block w-[3.5ch]">
+				<span class="text-abyssal/60 inline-block w-[3.5ch] text-2xl">
 					{{ currentMonthName }}
 				</span>
 			</div>
-			<h1 class="text-abyssal tracking-min text-[6rem] w-[3.5ch] leading-none tabular-nums">
+			<h1 class="text-abyssal tracking-min w-[3.5ch] text-[6rem] leading-none tabular-nums">
 				{{ displayDayLabel }}
 			</h1>
 		</div>
