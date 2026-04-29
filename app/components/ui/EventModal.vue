@@ -119,7 +119,6 @@ const submitEvent = () => {
 		</Transition>
 	</div>
 </template>
-
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
@@ -140,3 +139,4 @@ const submitEvent = () => {
 	transform: translateY(100%);
 }
 </style>
+

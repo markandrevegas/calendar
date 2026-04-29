@@ -14,11 +14,33 @@
 	--color-slate2: #1c2431;
 	--color-muted: #b7c0cd;
 	--color-muted2: #8a96a6;
+	/* dieter rams */
+	--color-base-bg: #f8f8f6;
+	--color-base-surface: #ffffff;
+	--color-base-text: var(--color-abyssal);
+	--color-base-muted: #6b6b6b;
+	--color-base-border: #e5e5e5;
+
+	--color-accent: #3a3a3a;
+
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 40px;
+
+	--text-xs: 12px;
+	--text-sm: 14px;
+	--text-base: 16px;
+	--text-lg: 20px;
+
+	--radius-none: 0px;
+	--radius-sm: 2px;
 }
 @utility tracking-min {
 	letter-spacing: var(--tracking-minimum);
 }
 body {
-	@apply bg-white;
-	/*@apply bg-[#E5E5E3] antialiased;*/
+	background: var(--color-base-bg);
+	color: var(--color-base-text);
 }
