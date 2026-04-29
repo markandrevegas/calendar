@@ -1,7 +1,6 @@
 <script setup>
-// State to store events by date: { "10.4.2026": [{ title: "Meeting", description: "..." }] }
 const events = ref({})
-// Helper to format the key
+
 const formatDateKey = (day, month, year) => `${day}.${month}.${year}`
 const currentViewDate = ref(new Date())
 const gestureStartX = ref(0)
@@ -136,7 +135,8 @@ const currentFormat = useCookie("calendar-format", {
 	watch: true,
 	maxAge: 60 * 60 * 24 * 36
 })
-
+const today = new Date()
+const selectedDay = ref(today.getDate())
 // Lifted state logic
 const getInitialSelectedDay = (date) => {
 	const today = new Date()
@@ -144,39 +144,44 @@ const getInitialSelectedDay = (date) => {
 		date.getMonth() === today.getMonth() && 
 		date.getFullYear() === today.getFullYear()
 
-    if (isCurrentMonth) {
-        return today.getDate()
-    }
-    return 1
+	return isCurrentMonth ? today.getDate() : 1 
 }
-
-const selectedDay = ref(getInitialSelectedDay(currentViewDate.value))
 
 // Watch for month changes to reset selection
 watch(currentViewDate, (newDate) => {
 	selectedDay.value = getInitialSelectedDay(newDate)
 })
 
-const handleDateSelection = (data) => {
-	// If it's a different day, just update the header highlight
-	if (selectedDay.value !== data.day) {
-		selectedDay.value = data.day
-		return
+const modalOrigin = ref({ x: 0, y: 0 })
+const handleSelectDate = (eventData) => {
+	// Lock origin to the center of the viewport
+	if (import.meta.client) {
+		modalOrigin.value = {
+			x: window.innerWidth / 2,
+			y: window.innerHeight / 2
+		}
 	}
-	// If clicking the same day again, open modal
-	openModal(data)
+
+	if (selectedDay.value === eventData.day) {
+		selectedDateData.value = eventData
+		isModalOpen.value = true
+	} else {
+		selectedDay.value = eventData.day
+		selectedDateData.value = eventData
+	}
 }
+
 </script>
 <template>
-	<div class="flex flex-1 h-full min-h-0 flex-col gap-6">
+	<div class="flex flex-1 h-full min-h-0 flex-col">
 		<ClientOnly>
 			<CalendarHeader :view-date="currentViewDate" :selected-day="selectedDay" :format="currentFormat" />
-			<div class="relative min-h-0 flex-1 flex flex-col justify-between touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
+			<div class="relative min-h-0 flex-1 flex flex-col touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
 				<Transition :name="transitionName" mode="out-in">
-					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="openModal" />
+					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="handleSelectDate" :selectedDay="selectedDay" />
 				</Transition>
 			</div>
-			<EventModal :is-open="isModalOpen" :event-data="selectedDateData" :existing-events="events[formatDateKey(selectedDateData.day, selectedDateData.month, selectedDateData.year)] || []" @close="isModalOpen = false" @save="handleSaveEvent" />
+			<EventModal :is-open="isModalOpen" :origin="modalOrigin" :event-data="selectedDateData" :existing-events="events[formatDateKey(selectedDateData.day, selectedDateData.month, selectedDateData.year)] || []" @close="isModalOpen = false" @save="handleSaveEvent" />
 			<template #fallback>
 				<div class="bg-palladian/50 h-[300px] w-full animate-pulse rounded-3xl"></div>
 			</template>

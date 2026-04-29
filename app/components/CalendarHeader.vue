@@ -7,12 +7,6 @@ const props = defineProps({
 	format: { type: String, default: "dk" }
 })
 
-// Only create the displayDate if a day is actually selected
-const displayDate = computed(() => {
-	if (!props.selectedDay) return null
-	return new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), props.selectedDay)
-})
-
 const currentMonthName = computed(() => {
 	const monthIndex = props.viewDate.getMonth()
 	const months = props.format === "dk" 
@@ -23,17 +17,21 @@ const currentMonthName = computed(() => {
 })
 
 const currentWeekdayName = computed(() => {
-	if (!displayDate.value) return "" // Return empty string if no day selected
-
+	const date = new Date(
+		props.viewDate.getFullYear(),
+		props.viewDate.getMonth(),
+		effectiveDay.value
+	)
+	
 	if (props.format === "dk") {
 		const days = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"]
-		return days[displayDate.value.getDay()]
+		return days[date.getDay()]
 	}
-	return displayDate.value.toLocaleString("en-US", { weekday: "short" })
+	return date.toLocaleString("en-US", { weekday: "short" })
 })
 
 const displayDayLabel = computed(() => {
-	return props.selectedDay ? String(props.selectedDay).padStart(2, "0") : ""
+  return String(effectiveDay.value).padStart(2, "0")
 })
 
 const currentFormat = useCookie("calendar-format", {
@@ -41,18 +39,29 @@ const currentFormat = useCookie("calendar-format", {
 	watch: true,
 	maxAge: 60 * 60 * 24 * 36
 })
+
+const effectiveDay = computed(() => {
+    return props.selectedDay ?? new Date().getDate()
+})
+const displayDate = computed(() => {
+  return new Date(
+    props.viewDate.getFullYear(),
+    props.viewDate.getMonth(),
+    effectiveDay.value
+  )
+})
 </script>
 
 <template>
-	<div class="flex flex-1 flex-col">
+	<div class="flex flex-col h-72">
 		<div class="flex w-full justify-between">
 			<span class="text-abyssal/50 font-bold tabular-nums">{{ viewDate.getFullYear() }}</span>
 			<LanguageSwitcher v-model="currentFormat" />
 		</div>
 		
-		<div class="flex flex-1 flex-col justify-end">
+		<div class="flex flex-1 flex-col justify-center">
 			<!-- Wrap the Day/Weekday in a div that only shows if selectedDay is truthy -->
-			<div class="flex w-32 font-semibold whitespace-nowrap transition-opacity duration-300" :class="{ 'opacity-0': !selectedDay, 'opacity-100': selectedDay }">
+			<div class="flex w-32 font-semibold whitespace-nowrap transition-opacity duration-300">
 				<span class="text-abyssal inline-block w-[3.5ch] text-2xl">
 					{{ currentWeekdayName }}
 				</span>

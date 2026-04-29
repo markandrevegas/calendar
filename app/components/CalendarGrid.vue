@@ -13,14 +13,18 @@ const emit = defineEmits(["select-date"])
 const formatDateKey = (day) => `${day}.${props.viewDate.getMonth() + 1}.${props.viewDate.getFullYear()}`
 
 const handleDateClick = (event, day) => {
-	const eventData = {
-		day,
-		month: props.viewDate.getMonth() + 1,
-		year: props.viewDate.getFullYear(),
-		fullDate: new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
-	}
-	// Send both the data and the pointer event to the parent
-	emit("select-date", eventData, event)
+  const eventData = {
+    day,
+    month: props.viewDate.getMonth() + 1,
+    year: props.viewDate.getFullYear(),
+    fullDate: new Date(
+      props.viewDate.getFullYear(),
+      props.viewDate.getMonth(),
+      day
+    )
+  }
+
+  emit("select-date", eventData, event)
 }
 
 const daysInMonth = computed(() => {
@@ -77,13 +81,10 @@ const hasEvent = (day) => {
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
 				<button
 					@click="handleDateClick($event, day)"
-					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300"
-					:class="{
-						'bg-ember': selectedDay === day || getDayState(day) === 'today',
+					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300" :class="{ 
+						'bg-ember': selectedDay === day,
 						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
-						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past'
-					}"
-				>
+						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past' }">
 					<span v-if="hasEvent(day)" class="absolute top-1 text-[10px] leading-none text-white">•</span>
 
 					<span class="hidden font-semibold">{{ day }}</span>

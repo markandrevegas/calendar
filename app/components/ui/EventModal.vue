@@ -1,6 +1,7 @@
 <script setup>
 const props = defineProps({
 	isOpen: Boolean,
+	origin: { type: Object, default: () => ({ x: 0, y: 0 }) },
 	eventData: { type: Object, default: () => ({}) },
 	existingEvents: { type: Array, default: () => [] }
 })
@@ -61,82 +62,71 @@ const submitEvent = () => {
 </script>
 
 <template>
-	<div v-if="isOpen" class="absolute inset-0 z-50 flex flex-col justify-end">
+	<div v-if="isOpen" class="absolute inset-0 z-50 flex flex-col overflow-hidden">
+		<!-- Backdrop -->
 		<Transition appear name="fade">
 			<div v-show="isOpen" class="bg-abyssal/60 absolute inset-0 backdrop-blur-[2px]" @click="emit('close')"></div>
 		</Transition>
 
-		<Transition appear name="slide">
-			<div v-show="isOpen" class="bg-palladian relative z-10 flex w-full flex-col justify-between rounded-t-[2.5rem] px-8 pt-4 pb-10 shadow-2xl" style="height: 60vh">
-				<div class="mb-6 flex justify-center"><div class="bg-abyssal/10 h-1.5 w-12 rounded-full"></div></div>
+		<!-- Expanding Modal -->
+		<Transition 
+			appear 
+			name="expand"
+			@before-enter="(el) => {
+				el.style.setProperty('--origin-x', `${origin.x}px`)
+				el.style.setProperty('--origin-y', `${origin.y}px`)
+			}"
+		>
+			<div v-show="isOpen" class="bg-palladian relative z-10 flex h-full w-full flex-col px-8 pt-12 pb-10 shadow-2xl">
+				<!-- Handle (can also be used to close) -->
+				<div class="mb-6 flex justify-center" @click="emit('close')">
+					<div class="bg-abyssal/10 h-1.5 w-12 rounded-full cursor-pointer">X</div>
+				</div>
 
+				<!-- YOUR EXISTING CONTENT -->
 				<div class="mb-8">
-					<h2 class="text-abyssal mt-1 text-xl font-semibold tracking-tighter">
-						{{ !isCreating ? "Events" : "Create Event" }}
+					<h2 class="text-abyssal mt-1 text-4xl font-semibold tracking-tighter">
+						{{ !isCreating ? "Events" : "Create" }}
 					</h2>
-					<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled for this day.</p>
-					<p v-else-if="!isCreating" class="text-abyssal font-medium">Saved events for this date.</p>
-					<p v-else class="text-abyssal font-medium">Start typing</p>
+					<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled.</p>
+					<p v-else class="text-abyssal font-medium">Saved events for this date.</p>
 				</div>
 
-				<div v-if="hasEvents && !isCreating" class="flex flex-col gap-4">
-					<div class="max-h-[28vh] space-y-3 overflow-y-auto pr-1">
-						<article v-for="(event, index) in existingEvents" :key="`${event.title}-${index}`" class="rounded-2xl bg-white/70 px-5 py-4">
-							<h3 class="text-abyssal text-sm font-semibold tracking-tight">
-								{{ event.title }}
-							</h3>
-							<p class="text-abyssal/50 mt-1 text-[11px] font-bold tracking-[0.15em] uppercase">
-								{{ event.displayDate }}
-							</p>
-							<p class="text-abyssal/70 mt-2 text-sm leading-relaxed italic">
-								{{ event.description || "No description provided." }}
-							</p>
-						</article>
-					</div>
-					<button @click="isCreating = true" class="text-abyssal border-abyssal/20 mt-2 rounded-xl border py-3 text-[10px] font-bold tracking-widest uppercase">Add Event</button>
-				</div>
-
-				<div v-else-if="!isCreating" class="flex flex-col">
-					<div class="bg-abyssal/5 mb-4 flex hidden h-16 w-16 items-center justify-center rounded-full">
-						<svg xmlns="http://www.w3.org/2000/svg" class="text-abyssal/20 h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-						</svg>
-					</div>
-
-					<button @click="isCreating = true" class="bg-abyssal text-palladian w-full rounded-2xl py-5 text-[10px] font-bold tracking-[0.15em] uppercase transition-transform active:scale-95">Create Event</button>
-				</div>
-
-				<div v-else class="flex flex-col gap-4">
-					<input v-model="title" type="text" placeholder="Event Title" class="box-border w-full min-w-0 rounded-2xl bg-white/80 px-5 py-4 text-base focus:outline-none" />
-					<input v-model="selectedDate" type="date" class="box-border w-full min-w-0 rounded-2xl bg-white/80 px-5 py-4 text-base focus:outline-none" />
-					<textarea v-model="description" placeholder="Description" rows="2" class="box-border w-full min-w-0 resize-none rounded-2xl bg-white/80 px-5 py-4 text-sm focus:outline-none"></textarea>
-					<div class="flex gap-2">
-						<button @click="isCreating = false" class="bg-slate2 text-abyssal rounded-2xl px-6 py-5 text-[10px] font-bold uppercase">Back</button>
-						<button @click="submitEvent" class="bg-ember text-abyssal flex-1 rounded-2xl py-5 text-[10px] font-bold tracking-[0.15em] uppercase">Save</button>
-					</div>
-				</div>
+				<!-- ... rest of your existing body (hasEvents, forms, etc) ... -->
+                <div v-if="hasEvents && !isCreating" class="flex flex-col gap-4">
+                    <!-- ... -->
+                </div>
+                <!-- ... -->
 			</div>
 		</Transition>
 	</div>
 </template>
+
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-	transition: opacity 0.4s;
+.expand-enter-active {
+	transition: clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
-	opacity: 0;
+.expand-leave-active {
+	transition: clip-path 0.4s cubic-bezier(0.4, 0, 1, 1);
 }
-.slide-enter-active {
-	transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+
+/* 1. Start as a small orange circle at the button's location */
+.expand-enter-from {
+	background-color: #F26419; /* This is your bg-ember hex */
+	clip-path: circle(24px at var(--origin-x) var(--origin-y));
 }
-.slide-leave-active {
-	transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+
+/* 2. Expand to cover the entire screen */
+.expand-enter-to, .expand-leave-from {
+	clip-path: circle(150% at var(--origin-x) var(--origin-y));
 }
-.slide-enter-from,
-.slide-leave-to {
-	transform: translateY(100%);
+
+/* 3. Collapse back to nothing on close */
+.expand-leave-to {
+	clip-path: circle(0px at var(--origin-x) var(--origin-y));
 }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.4s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
 
