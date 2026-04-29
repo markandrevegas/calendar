@@ -1,40 +1,32 @@
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
 	viewDate: { type: Date, default: () => new Date() },
 	format: { type: String, default: "dk" },
-	events: { type: Object, default: () => ({}) }
+	events: { type: Object, default: () => ({}) },
+	selectedDay: { type: Number, default: null }
 })
+
 const emit = defineEmits(["select-date"])
-const getInitialSelectedDay = () => {
-	const today = new Date()
-	const lastDayOfMonth = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth() + 1, 0).getDate()
-	return Math.min(today.getDate(), lastDayOfMonth)
-}
 
-const selectedDay = ref(getInitialSelectedDay())
 const formatDateKey = (day) => `${day}.${props.viewDate.getMonth() + 1}.${props.viewDate.getFullYear()}`
-const handleDateClick = (day) => {
-	if (selectedDay.value !== day) {
-		selectedDay.value = day
-		return
-	}
 
-	selectedDay.value = day
+const handleDateClick = (event, day) => {
 	const eventData = {
 		day,
 		month: props.viewDate.getMonth() + 1,
 		year: props.viewDate.getFullYear(),
 		fullDate: new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
 	}
-	emit("select-date", eventData)
+	// Send both the data and the pointer event to the parent
+	emit("select-date", eventData, event)
 }
 
-// 1. Calculate how many days in the current month
 const daysInMonth = computed(() => {
 	return new Date(props.viewDate.getFullYear(), props.viewDate.getMonth() + 1, 0).getDate()
 })
 
-// 2. Start Offset (US = Sun first, DK = Mon first)
 const startOffset = computed(() => {
 	const firstDay = new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), 1).getDay()
 	if (props.format === "dk") {
@@ -43,16 +35,12 @@ const startOffset = computed(() => {
 	return firstDay
 })
 
-// 3. Weekday Labels based on format
 const labels = computed(() => {
-	if (props.format === "dk") {
-		return ["M", "T", "O", "T", "F", "L", "S"]
-	} else {
-		return ["S", "M", "T", "W", "T", "F", "S"]
-	}
+	return props.format === "dk" 
+		? ["M", "T", "O", "T", "F", "L", "S"] 
+		: ["S", "M", "T", "W", "T", "F", "S"]
 })
 
-// This ensures the grid always has 6 rows (6 * 7 = 42)
 const endOffset = computed(() => {
 	const currentCount = startOffset.value + daysInMonth.value
 	return 42 - currentCount
@@ -72,18 +60,10 @@ const hasEvent = (day) => {
 	const dateKey = formatDateKey(day)
 	return Array.isArray(props.events?.[dateKey]) && props.events[dateKey].length > 0
 }
-
-watch(
-	() => [props.viewDate.getMonth(), props.viewDate.getFullYear()],
-	() => {
-		selectedDay.value = getInitialSelectedDay()
-	}
-)
 </script>
 
 <template>
 	<div class="flex h-full min-h-0 w-full flex-col select-none">
-		<CalendarHeader :view-date="props.viewDate" :selected-day="selectedDay" :format="props.format" />
 
 		<div class="mt-auto mb-3 grid grid-cols-7">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
@@ -96,10 +76,10 @@ watch(
 
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
 				<button
-					@click="handleDateClick(day)"
+					@click="handleDateClick($event, day)"
 					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300"
 					:class="{
-						'bg-ember': selectedDay === day,
+						'bg-ember': selectedDay === day || getDayState(day) === 'today',
 						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
 						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past'
 					}"

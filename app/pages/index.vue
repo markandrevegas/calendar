@@ -130,11 +130,48 @@ const openModal = (data) => {
 	selectedDateData.value = data
 	isModalOpen.value = true
 }
+
+const currentFormat = useCookie("calendar-format", {
+	default: () => "dk",
+	watch: true,
+	maxAge: 60 * 60 * 24 * 36
+})
+
+// Lifted state logic
+const getInitialSelectedDay = (date) => {
+	const today = new Date()
+	const isCurrentMonth = 
+		date.getMonth() === today.getMonth() && 
+		date.getFullYear() === today.getFullYear()
+
+    if (isCurrentMonth) {
+        return today.getDate()
+    }
+    return 1
+}
+
+const selectedDay = ref(getInitialSelectedDay(currentViewDate.value))
+
+// Watch for month changes to reset selection
+watch(currentViewDate, (newDate) => {
+	selectedDay.value = getInitialSelectedDay(newDate)
+})
+
+const handleDateSelection = (data) => {
+	// If it's a different day, just update the header highlight
+	if (selectedDay.value !== data.day) {
+		selectedDay.value = data.day
+		return
+	}
+	// If clicking the same day again, open modal
+	openModal(data)
+}
 </script>
 <template>
-	<div class="flex h-full min-h-0 flex-col gap-6">
+	<div class="flex flex-1 h-full min-h-0 flex-col gap-6">
 		<ClientOnly>
-			<div class="relative min-h-0 flex-1 touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
+			<CalendarHeader :view-date="currentViewDate" :selected-day="selectedDay" :format="currentFormat" />
+			<div class="relative min-h-0 flex-1 flex flex-col justify-between touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
 				<Transition :name="transitionName" mode="out-in">
 					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="openModal" />
 				</Transition>
