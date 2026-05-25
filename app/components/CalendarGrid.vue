@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue"
 
 const props = defineProps({
 	viewDate: { type: Date, default: () => new Date() },
@@ -13,18 +13,14 @@ const emit = defineEmits(["select-date"])
 const formatDateKey = (day) => `${day}.${props.viewDate.getMonth() + 1}.${props.viewDate.getFullYear()}`
 
 const handleDateClick = (event, day) => {
-  const eventData = {
-    day,
-    month: props.viewDate.getMonth() + 1,
-    year: props.viewDate.getFullYear(),
-    fullDate: new Date(
-      props.viewDate.getFullYear(),
-      props.viewDate.getMonth(),
-      day
-    )
-  }
+	const eventData = {
+		day,
+		month: props.viewDate.getMonth() + 1,
+		year: props.viewDate.getFullYear(),
+		fullDate: new Date(props.viewDate.getFullYear(), props.viewDate.getMonth(), day)
+	}
 
-  emit("select-date", eventData, event)
+	emit("select-date", eventData, event)
 }
 
 const daysInMonth = computed(() => {
@@ -40,9 +36,7 @@ const startOffset = computed(() => {
 })
 
 const labels = computed(() => {
-	return props.format === "dk" 
-		? ["M", "T", "O", "T", "F", "L", "S"] 
-		: ["S", "M", "T", "W", "T", "F", "S"]
+	return props.format === "dk" ? ["M", "T", "O", "T", "F", "L", "S"] : ["S", "M", "T", "W", "T", "F", "S"]
 })
 
 const endOffset = computed(() => {
@@ -68,7 +62,6 @@ const hasEvent = (day) => {
 
 <template>
 	<div class="flex h-full min-h-0 w-full flex-col select-none">
-
 		<div class="mt-auto mb-3 grid grid-cols-7">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
 		</div>
@@ -81,10 +74,13 @@ const hasEvent = (day) => {
 			<div v-for="day in daysInMonth" :key="day" class="flex aspect-square items-center justify-center">
 				<button
 					@click="handleDateClick($event, day)"
-					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300" :class="{ 
+					class="relative flex h-full w-full items-center justify-center rounded-full text-white tabular-nums transition-all duration-300"
+					:class="{
 						'bg-ember': selectedDay === day,
 						'bg-abyssal': selectedDay !== day && getDayState(day) === 'past',
-						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past' }">
+						'bg-abyssal/50': selectedDay !== day && getDayState(day) !== 'past'
+					}"
+				>
 					<span v-if="hasEvent(day)" class="absolute top-1 text-[10px] leading-none text-white">•</span>
 
 					<span class="hidden font-semibold">{{ day }}</span>

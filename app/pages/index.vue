@@ -1,4 +1,6 @@
 <script setup>
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue"
+
 const events = ref({})
 
 const formatDateKey = (day, month, year) => `${day}.${month}.${year}`
@@ -8,6 +10,8 @@ const isPointerActive = ref(false)
 const swipeDirection = ref("next")
 const isDesktop = ref(false)
 const DESKTOP_BREAKPOINT = 1024
+
+const containerEl = ref(null)
 
 const monthViewKey = computed(() => `${currentViewDate.value.getFullYear()}-${currentViewDate.value.getMonth()}`)
 
@@ -140,11 +144,9 @@ const selectedDay = ref(today.getDate())
 // Lifted state logic
 const getInitialSelectedDay = (date) => {
 	const today = new Date()
-	const isCurrentMonth = 
-		date.getMonth() === today.getMonth() && 
-		date.getFullYear() === today.getFullYear()
+	const isCurrentMonth = date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()
 
-	return isCurrentMonth ? today.getDate() : 1 
+	return isCurrentMonth ? today.getDate() : 1
 }
 
 // Watch for month changes to reset selection
@@ -153,35 +155,37 @@ watch(currentViewDate, (newDate) => {
 })
 
 const modalOrigin = ref({ x: 0, y: 0 })
-const handleSelectDate = (eventData) => {
-	// Lock origin to the center of the viewport
-	if (import.meta.client) {
-		modalOrigin.value = {
-			x: window.innerWidth / 2,
-			y: window.innerHeight / 2
-		}
-	}
+const handleSelectDate = async (eventData, event) => {
+	const parent = containerEl.value
+	const rect = parent.getBoundingClientRect()
 
+	modalOrigin.value = {
+		x: event.clientX,
+		y: event.clientY
+	}
+	console.log("origin = ", modalOrigin.value)
 	if (selectedDay.value === eventData.day) {
 		selectedDateData.value = eventData
+		await nextTick()
 		isModalOpen.value = true
 	} else {
 		selectedDay.value = eventData.day
 		selectedDateData.value = eventData
 	}
 }
-
 </script>
 <template>
-	<div class="flex flex-1 h-full min-h-0 flex-col">
+	<div class="relative flex h-full min-h-0 flex-1 flex-col">
+		<CalendarHeader :view-date="currentViewDate" :selected-day="selectedDay" :format="currentFormat" />
 		<ClientOnly>
-			<CalendarHeader :view-date="currentViewDate" :selected-day="selectedDay" :format="currentFormat" />
-			<div class="relative min-h-0 flex-1 flex flex-col touch-pan-y overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel">
+			
+			<div class="relative flex h-full min-h-0 w-full flex-1 touch-pan-y flex-col overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel" ref="containerEl">
 				<Transition :name="transitionName" mode="out-in">
 					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="handleSelectDate" :selectedDay="selectedDay" />
 				</Transition>
+				<EventModal :is-open="isModalOpen" :origin="modalOrigin" :event-data="selectedDateData" :existing-events="events[formatDateKey(selectedDateData.day, selectedDateData.month, selectedDateData.year)] || []" @close="isModalOpen = false" @save="handleSaveEvent" />
 			</div>
-			<EventModal :is-open="isModalOpen" :origin="modalOrigin" :event-data="selectedDateData" :existing-events="events[formatDateKey(selectedDateData.day, selectedDateData.month, selectedDateData.year)] || []" @close="isModalOpen = false" @save="handleSaveEvent" />
+			
 			<template #fallback>
 				<div class="bg-palladian/50 h-[300px] w-full animate-pulse rounded-3xl"></div>
 			</template>
