@@ -20,10 +20,14 @@ const { isCreating, title, description, selectedDate, hasEvents, showContent, su
 				<!-- Header -->
 				<div class="mb-8">
 					<div class="text-abyssal flex w-full items-center justify-between py-8">
-						<h2 class="text-4xl font-semibold tracking-tighter">
-							{{ isCreating ? "Create" : "Events" }}
-						</h2>
-						<PanelClose @click="close" class="size-8" />
+						<div class="flex items-center gap-3">
+							<h2 class="text-4xl font-semibold tracking-tighter">
+								{{ isCreating ? "Create" : "Events" }}
+							</h2>
+
+							<button v-if="!isCreating" class="bg-ember hover:bg-ember/90 flex size-8 items-center justify-center rounded-full text-white transition-colors" @click="isCreating = true" aria-label="Create event">+</button>
+						</div>
+						<VerticalDots @click="close" class="size-8" />
 					</div>
 					<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled.</p>
 

@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
 					</span>
 				</div>
 
-				<div class="date-slot text-ember inline-block w-[3.5ch] text-2xl" aria-live="polite">
+				<div class="date-slot inline-block w-[3.5ch] text-2xl" aria-live="polite">
 					<span :class="['date-line date-line--current', { 'is-leaving': isDateSwitching }]">
 						{{ leavingDayLabel }}
 					</span>
