@@ -14,9 +14,9 @@ const { isCreating, title, description, selectedDate, hasEvents, showContent, su
 </script>
 
 <template>
-	<div class="relative flex h-full w-full flex-col overflow-hidden bg-white shadow-xl">
+	<div class="relative flex h-full w-full flex-col overflow-hidden bg-white">
 		<Transition name="content-fade">
-			<div v-if="showContent" class="relative flex h-full w-full flex-col px-6 shadow-2xl">
+			<div v-if="showContent" class="relative flex h-full w-full flex-col px-6 inset-shadow-xl rounded-t-4xl border border-slate-200">
 				<!-- Header -->
 				<div class="mb-8">
 					<div class="text-abyssal flex w-full items-center justify-between py-8">
@@ -25,9 +25,11 @@ const { isCreating, title, description, selectedDate, hasEvents, showContent, su
 								{{ isCreating ? "Create" : "Events" }}
 							</h2>
 
-							<button v-if="!isCreating" class="bg-ember hover:bg-ember/90 flex size-8 items-center justify-center rounded-full text-white transition-colors" @click="isCreating = true" aria-label="Create event">+</button>
+							<button class="bg-ember hover:bg-ember/90 flex size-6 items-center justify-center rounded-full text-white transition-colors" @click="isCreating = !isCreating" :aria-label="isCreating ? 'Close form' : 'Create event'">
+								<span class="text-xl leading-none transition-transform duration-200" :class="{ 'rotate-45': isCreating }"> + </span>
+							</button>
 						</div>
-						<VerticalDots @click="close" class="size-8" />
+						<PanelClose @click="close" class="size-8" />
 					</div>
 					<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled.</p>
 
@@ -40,12 +42,23 @@ const { isCreating, title, description, selectedDate, hasEvents, showContent, su
 				</div>
 
 				<!-- Form -->
-				<div v-else-if="isCreating">
-					<input v-model="title" placeholder="Title" />
-					<textarea v-model="description" placeholder="Description"></textarea>
-					<input v-model="selectedDate" type="date" />
+				<div v-else-if="isCreating" class="flex flex-col gap-4">
+					<div class="flex flex-col gap-1">
+						<label for="title" class="text-abyssal text-sm font-medium"> Title </label>
+						<input id="title" v-model="title" class="rounded-md border px-3 py-2" type="text" />
+					</div>
 
-					<button @click="submitEvent">Save</button>
+					<div class="flex flex-col gap-1">
+						<label for="description" class="text-abyssal text-sm font-medium"> Description </label>
+						<textarea id="description" v-model="description" class="rounded-md border px-3 py-2" rows="4" />
+					</div>
+
+					<div class="flex flex-col gap-1">
+						<label for="date" class="text-abyssal text-sm font-medium"> Date </label>
+						<input id="date" v-model="selectedDate" type="date" class="rounded-md border px-3 py-2" />
+					</div>
+
+					<button @click="submitEvent" class="bg-ember hover:bg-ember/90 rounded-md px-4 py-2 text-white transition-colors">Save</button>
 				</div>
 			</div>
 		</Transition>

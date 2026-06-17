@@ -261,7 +261,7 @@ watch(
 
 <template>
 	<div class="flex h-full min-h-0 w-full flex-col select-none">
-		<div class="mt-auto mb-3 grid grid-cols-7">
+		<div class="mt-auto mb-3 grid grid-cols-7 transition-opacity duration-300" :class="expandedDay ? 'pointer-events-none opacity-0' : 'opacity-100'">
 			<span v-for="(label, index) in labels" :key="`${format}-${index}`" class="text-abyssal/50 text-center text-sm font-bold"> {{ label }} </span>
 		</div>
 
@@ -297,7 +297,7 @@ watch(
 				</div>
 			</Transition>
 
-			<div v-if="expandedDay" class="bg-ember pointer-events-auto absolute z-20 overflow-hidden shadow-2xl transition-[top,left,width,height,border-radius] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)]" :style="overlayStyle" @transitionend="!isExpanded ? finishClose() : null">
+			<div v-if="expandedDay" class="pointer-events-auto absolute z-20 overflow-hidden transition-[top,left,width,height,border-radius] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] shadow-xl rounded-t-xl" :style="overlayStyle" @transitionend="!isExpanded ? finishClose() : null">
 				<EventForm :is-open="Boolean(expandedDay)" :event-data="expandedEventData" :existing-events="expandedExistingEvents" :on-close="closeExpandedDay" class="h-full w-full" @save="handleFormSave" />
 			</div>
 		</div>
