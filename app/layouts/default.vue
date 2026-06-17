@@ -1,6 +1,6 @@
 <template>
 	<div class="flex min-h-screen items-center justify-center">
-		<main class="relative z-0 flex w-full flex-col overflow-hidden bg-slate-50 transition-all duration-300 sm:h-full sm:max-h-[932px] sm:min-h-[667px] sm:w-[440px] sm:rounded-[3rem] sm:border-[8px] sm:border-slate-900 sm:shadow-2xl md:my-auto" style="transform: translate(0, 0);">
+		<main class="relative z-0 flex w-full flex-col overflow-hidden bg-slate-50 transition-all duration-300 sm:h-full sm:max-h-[932px] sm:min-h-[667px] sm:w-[440px] sm:rounded-[3rem] sm:border-[8px] sm:border-slate-900 sm:shadow-2xl md:my-auto" style="transform: translate(0, 0)">
 			<div class="relative -top-[10px] hidden h-8 w-full items-center justify-center sm:flex">
 				<div class="h-6 w-32 rounded-b-2xl bg-slate-900"></div>
 			</div>

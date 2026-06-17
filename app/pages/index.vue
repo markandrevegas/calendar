@@ -1,10 +1,24 @@
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue"
+import { ref, onMounted, onBeforeUnmount } from "vue"
 
-const events = ref({})
+import { useCalendarNavigation } from "@/composables/useCalendarNavigation"
+import { useCalendarSelection } from "@/composables/useCalendarSelection"
+import { useEventStore } from "@/composables/useEventStore"
 
-const formatDateKey = (day, month, year) => `${day}.${month}.${year}`
-const currentViewDate = ref(new Date())
+const { currentViewDate, transitionName, goToNextMonth, goToPreviousMonth } = useCalendarNavigation()
+
+const { selected } = useCalendarSelection()
+
+const { events, addEvent } = useEventStore()
+
+const handleSelectDate = (payload) => {
+	selected.value = payload
+}
+
+const handleSaveEvent = (payload) => {
+	addEvent(payload)
+}
+
 const gestureStartX = ref(0)
 const isPointerActive = ref(false)
 const swipeDirection = ref("next")
@@ -12,24 +26,6 @@ const isDesktop = ref(false)
 const DESKTOP_BREAKPOINT = 1024
 
 const containerEl = ref(null)
-
-const monthViewKey = computed(() => `${currentViewDate.value.getFullYear()}-${currentViewDate.value.getMonth()}`)
-
-const shiftMonth = (offset) => {
-	const nextDate = new Date(currentViewDate.value)
-	nextDate.setMonth(nextDate.getMonth() + offset)
-	currentViewDate.value = nextDate
-}
-
-const goToPreviousMonth = () => {
-	swipeDirection.value = "prev"
-	shiftMonth(-1)
-}
-
-const goToNextMonth = () => {
-	swipeDirection.value = "next"
-	shiftMonth(1)
-}
 
 const startGesture = (clientX) => {
 	gestureStartX.value = clientX
@@ -77,20 +73,6 @@ const handlePointerCancel = () => {
 	isPointerActive.value = false
 }
 
-const handleKeydown = (event) => {
-	if (!isDesktop.value) return
-
-	if (event.key === "ArrowLeft") {
-		event.preventDefault()
-		goToPreviousMonth()
-	}
-
-	if (event.key === "ArrowRight") {
-		event.preventDefault()
-		goToNextMonth()
-	}
-}
-
 const updateViewportMode = () => {
 	if (!import.meta.client) return
 	isDesktop.value = window.innerWidth >= DESKTOP_BREAKPOINT
@@ -99,93 +81,28 @@ const updateViewportMode = () => {
 onMounted(() => {
 	updateViewportMode()
 	window.addEventListener("resize", updateViewportMode)
-	window.addEventListener("keydown", handleKeydown)
 })
 
 onBeforeUnmount(() => {
 	window.removeEventListener("resize", updateViewportMode)
-	window.removeEventListener("keydown", handleKeydown)
 })
-
-const transitionName = computed(() => (swipeDirection.value === "next" ? "month-next" : "month-prev"))
-
-const handleSaveEvent = (payload) => {
-	const key = formatDateKey(payload.day, payload.month, payload.year)
-
-	if (!events.value[key]) {
-		events.value[key] = []
-	}
-
-	events.value[key].push({
-		title: payload.title,
-		description: payload.description,
-		date: payload.date,
-		displayDate: payload.displayDate
-	})
-
-	// Close modal after saving
-	isModalOpen.value = false
-}
-
-const isModalOpen = ref(false)
-const selectedDateData = ref({})
-const openModal = (data) => {
-	selectedDateData.value = data
-	isModalOpen.value = true
-}
 
 const currentFormat = useCookie("calendar-format", {
 	default: () => "dk",
 	watch: true,
 	maxAge: 60 * 60 * 24 * 36
 })
-const today = new Date()
-const selectedDay = ref(today.getDate())
-// Lifted state logic
-const getInitialSelectedDay = (date) => {
-	const today = new Date()
-	const isCurrentMonth = date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()
-
-	return isCurrentMonth ? today.getDate() : 1
-}
-
-// Watch for month changes to reset selection
-watch(currentViewDate, (newDate) => {
-	selectedDay.value = getInitialSelectedDay(newDate)
-})
-
-const modalOrigin = ref({ x: 0, y: 0 })
-const handleSelectDate = async (eventData, event) => {
-	const parent = containerEl.value
-	const rect = parent.getBoundingClientRect()
-
-	modalOrigin.value = {
-		x: event.clientX,
-		y: event.clientY
-	}
-	console.log("origin = ", modalOrigin.value)
-	if (selectedDay.value === eventData.day) {
-		selectedDateData.value = eventData
-		await nextTick()
-		isModalOpen.value = true
-	} else {
-		selectedDay.value = eventData.day
-		selectedDateData.value = eventData
-	}
-}
 </script>
 <template>
 	<div class="relative flex h-full min-h-0 flex-1 flex-col">
-		<CalendarHeader :view-date="currentViewDate" :selected-day="selectedDay" :format="currentFormat" />
+		<CalendarHeader :view-date="currentViewDate" :selected-date="selected" :format="currentFormat" />
 		<ClientOnly>
-			
 			<div class="relative flex h-full min-h-0 w-full flex-1 touch-pan-y flex-col overflow-hidden select-none" @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd" @pointerdown="handlePointerDown" @pointerup="handlePointerUp" @pointercancel="handlePointerCancel" ref="containerEl">
 				<Transition :name="transitionName" mode="out-in">
-					<CalendarGrid :key="monthViewKey" :format="currentFormat" :viewDate="currentViewDate" :events="events" class="min-h-0 flex-1" @select-date="handleSelectDate" :selectedDay="selectedDay" />
+					<CalendarGrid :active-day="selected" :format="currentFormat" :viewDate="currentViewDate" :events="events" @select-date="handleSelectDate" @save-event="handleSaveEvent" />
 				</Transition>
-				<EventModal :is-open="isModalOpen" :origin="modalOrigin" :event-data="selectedDateData" :existing-events="events[formatDateKey(selectedDateData.day, selectedDateData.month, selectedDateData.year)] || []" @close="isModalOpen = false" @save="handleSaveEvent" />
 			</div>
-			
+
 			<template #fallback>
 				<div class="bg-palladian/50 h-[300px] w-full animate-pulse rounded-3xl"></div>
 			</template>
