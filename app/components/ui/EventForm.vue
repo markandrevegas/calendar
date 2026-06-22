@@ -16,25 +16,22 @@ const { isCreating, title, description, selectedDate, hasEvents, showContent, su
 <template>
 	<div class="relative flex h-full w-full flex-col overflow-hidden bg-white">
 		<Transition name="content-fade">
-			<div v-if="showContent" class="relative flex h-full w-full flex-col px-6 inset-shadow-xl rounded-t-4xl border border-slate-200">
+			<div v-if="showContent" class="inset-shadow-xl relative flex h-full w-full flex-col rounded-t-4xl border border-slate-200 bg-white px-6">
 				<!-- Header -->
-				<div class="mb-8">
-					<div class="text-abyssal flex w-full items-center justify-between py-8">
-						<div class="flex items-center gap-3">
-							<h2 class="text-4xl font-semibold tracking-tighter">
-								{{ isCreating ? "Create" : "Events" }}
-							</h2>
-
-							<button class="bg-ember hover:bg-ember/90 flex size-6 items-center justify-center rounded-full text-white transition-colors" @click="isCreating = !isCreating" :aria-label="isCreating ? 'Close form' : 'Create event'">
-								<span class="text-xl leading-none transition-transform duration-200" :class="{ 'rotate-45': isCreating }"> + </span>
-							</button>
-						</div>
-						<PanelClose @click="close" class="size-8" />
+				<section>
+					<div class="text-abyssal flex w-full items-center justify-between pt-4">
+						<button class="flex size-8 items-center justify-center rounded-full text-abyssal transition-colors"><BackArrow @click="close" class="size-8" /></button>
+						
+						<h2 class="text-lg font-semibold tracking-tighter">
+							{{ isCreating ? "Create new" : "Events" }}
+						</h2>
+						<button class="flex size-8 items-center justify-center rounded-full text-white transition-colors" @click="isCreating = !isCreating" :aria-label="isCreating ? 'Close form' : 'Create event'">
+							<span class="text-abyssal text-xl leading-none transition-transform duration-200" :class="{ 'rotate-45': isCreating }"> + </span>
+						</button>
 					</div>
-					<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled.</p>
-
-					<p v-else class="text-abyssal font-medium">Saved events for this date.</p>
-				</div>
+					<!--<p v-if="!hasEvents && !isCreating" class="text-abyssal font-medium">No events scheduled.</p>
+					<p v-else class="text-abyssal font-medium">Saved events for this date.</p>-->
+				</section>
 
 				<!-- Body -->
 				<div v-if="hasEvents && !isCreating" class="flex flex-col gap-4">

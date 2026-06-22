@@ -297,7 +297,7 @@ watch(
 				</div>
 			</Transition>
 
-			<div v-if="expandedDay" class="pointer-events-auto absolute z-20 overflow-hidden transition-[top,left,width,height,border-radius] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] shadow-xl rounded-t-xl" :style="overlayStyle" @transitionend="!isExpanded ? finishClose() : null">
+			<div v-if="expandedDay" class="pointer-events-auto absolute z-20 overflow-hidden rounded-t-xl shadow-xl transition-[top,left,width,height,border-radius] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)]" :style="overlayStyle" @transitionend="!isExpanded ? finishClose() : null">
 				<EventForm :is-open="Boolean(expandedDay)" :event-data="expandedEventData" :existing-events="expandedExistingEvents" :on-close="closeExpandedDay" class="h-full w-full" @save="handleFormSave" />
 			</div>
 		</div>
